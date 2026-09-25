@@ -124,6 +124,10 @@ def _load_pricing(path: Path) -> tuple[dict[str, dict[str, Any]], dict[str, Any]
                 entry.get("source_url"), f"pricing.models.{name}.source_url"
             ),
             "freshness_disclosure": entry.get("freshness_disclosure"),
+            "verified_on": _string(
+                entry.get("verified_on", snapshot.get("verified_on")),
+                f"pricing.models.{name}.verified_on",
+            ),
         }
         if parsed[name]["promotional"]:
             _string(
@@ -385,6 +389,7 @@ def calculate_receipt(payload: dict[str, Any], pricing_path: Path) -> dict[str, 
                 result.update(status="available", cost_usd=_money(known_cost))
             result["rate_source_url"] = model_rates["source_url"]
             result["promotional_rate"] = model_rates["promotional"]
+            result["rate_verified_on"] = model_rates["verified_on"]
             if model_rates["freshness_disclosure"]:
                 result["freshness_disclosure"] = model_rates["freshness_disclosure"]
         call_results.append(result)

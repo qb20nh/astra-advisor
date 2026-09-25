@@ -119,9 +119,12 @@ all-Astra run would actually consume, actual net task savings, quality, speed, o
 change to ChatGPT subscription charges or usage credits. No subagents means no
 delegation savings. Reasoning effort does not multiply the token price.
 
-The current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json) records
-official source URLs and standard short-context USD rates per million tokens,
-verified by the recording coordinator on September 25, 2026. The immutable
+Plugin 0.3.0 uses the current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json),
+which records official source URLs and standard short-context USD rates per million
+tokens. Each current entry records its own verification date; GPT-6 Sol and Luna were
+verified September 25, while the carried-forward GPT-5.6 rates retain their September
+4 verification date. The snapshot-level `verified_on` is therefore conservatively
+the oldest included verification date. The immutable
 [September 4 snapshot](plugins/astra-advisor/pricing/2026-09-04.json) remains available
 for receipts produced by plugin 0.2.0. These are historical estimates; GPT-5.6 Sol
 pricing is promotional and may change. The calculator rejects unsupported

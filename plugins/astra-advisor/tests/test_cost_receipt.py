@@ -132,6 +132,7 @@ class CostReceiptTests(unittest.TestCase):
                 "cached_input": "0.2",
                 "output": "10",
                 "promotional": False,
+                "verified_on": "2026-09-25",
                 "source_url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
             },
         )
@@ -142,6 +143,7 @@ class CostReceiptTests(unittest.TestCase):
                 "cached_input": "0.01",
                 "output": "0.5",
                 "promotional": False,
+                "verified_on": "2026-09-25",
                 "source_url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
             },
         )
@@ -157,6 +159,7 @@ class CostReceiptTests(unittest.TestCase):
         self.assertEqual(comparison["api_price_difference_usd"], "0.03883")
         self.assertIn("not a measured", comparison["label"])
         self.assertTrue(result["calls"][2]["promotional_rate"])
+        self.assertEqual(result["calls"][2]["rate_verified_on"], "2026-09-04")
         self.assertIsNone(result["calls"][2]["reasoning_tokens_included_in_output"])
 
     def test_cached_and_reasoning_subsets_are_not_double_counted(self) -> None:

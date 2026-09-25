@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "snapshot_date": "2026-09-25",
-  "verified_on": "2026-09-25",
+  "verified_on": "2026-09-04",
   "currency": "USD",
   "unit": "per_million_tokens",
   "eligibility": "standard_short_context",
@@ -12,6 +12,7 @@
       "cached_input": "1",
       "output": "50",
       "promotional": false,
+      "verified_on": "2026-09-04",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra"
     },
     "gpt-5.6-sol": {
@@ -19,6 +20,7 @@
       "cached_input": "0.4",
       "output": "20",
       "promotional": true,
+      "verified_on": "2026-09-04",
       "freshness_disclosure": "Promotional pricing verified on 2026-09-04; re-verify before later use.",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
     },
@@ -27,6 +29,7 @@
       "cached_input": "0.02",
       "output": "1.2",
       "promotional": false,
+      "verified_on": "2026-09-04",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
     },
     "gpt-6-sol": {
@@ -34,6 +37,7 @@
       "cached_input": "0.2",
       "output": "10",
       "promotional": false,
+      "verified_on": "2026-09-25",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-6-sol"
     },
     "gpt-6-luna": {
@@ -41,6 +45,7 @@
       "cached_input": "0.01",
       "output": "0.5",
       "promotional": false,
+      "verified_on": "2026-09-25",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-6-luna"
     }
   },

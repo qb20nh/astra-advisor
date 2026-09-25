@@ -287,10 +287,12 @@ never add them a second time. Explicit per-call standard short-context eligibili
 is required; unknown or unsupported long-context, service-tier, or cache-write pricing
 must not silently inherit standard rates. Effort is recorded without a rate multiplier.
 
-The current snapshot records USD per million tokens and official source URLs, with a
-2026-09-25 verification date supplied by the recording coordinator. It is a historical
-snapshot, not a live-price guarantee; GPT-5.6 Sol rates are promotional. Disclose the
-snapshot date and freshness when showing an estimate. The immutable 2026-09-04
+The current snapshot records USD per million tokens and official source URLs. Each
+model entry records its own verification date; the snapshot-level `verified_on` is
+the oldest included date rather than a claim that every rate was reverified when the
+snapshot was assembled. It is not a live-price guarantee; GPT-5.6 Sol rates are
+promotional. Disclose the snapshot date and applicable model-rate freshness when
+showing an estimate. The immutable 2026-09-04
 snapshot remains available for receipts from plugin 0.2.0. Use a newly verified
 versioned snapshot if current prices are required. Do not silently change historical
 receipts.
