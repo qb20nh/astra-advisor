@@ -77,7 +77,7 @@ manifest_path = plugin / ".codex-plugin" / "plugin.json"
 manifest = require_mapping(load_json(manifest_path, "plugin manifest"), "plugin manifest")
 
 require_string(manifest, "name", "plugin manifest", "astra-advisor")
-require_string(manifest, "version", "plugin manifest", "0.2.0")
+require_string(manifest, "version", "plugin manifest", "0.3.0")
 require_string(manifest, "description", "plugin manifest")
 require_string(manifest, "homepage", "plugin manifest", "https://github.com/DannyMac180/astra-advisor#readme")
 require_string(manifest, "repository", "plugin manifest", "https://github.com/DannyMac180/astra-advisor")
@@ -123,7 +123,8 @@ if operations_path.is_file():
         check_relative_link(target, operations_path.parent, "operations reference link")
 require((plugin / "scripts" / "cost_receipt.py").is_file(), "missing cost receipt calculator")
 require((plugin / "tests" / "test_cost_receipt.py").is_file(), "missing cost receipt tests")
-require((plugin / "pricing" / "2026-09-04.json").is_file(), "missing pricing snapshot")
+require((plugin / "pricing" / "2026-09-25.json").is_file(), "missing pricing snapshot")
+require((plugin / "pricing" / "2026-09-04.json").is_file(), "missing historical pricing snapshot")
 
 if skill_path.is_file():
     skill_text = skill_path.read_text(encoding="utf-8")
@@ -141,12 +142,18 @@ if skill_path.is_file():
         require(bool(frontmatter_lines.get("description")), "orchestration skill frontmatter.description must be non-empty")
     for target in markdown_links(skill_text):
         check_relative_link(target, skill_root, "orchestration skill link")
+    require("gpt-5.6-sol" in skill_text and "gpt-5.6-luna" in skill_text, "orchestration skill must include both catalog-supported subagent models")
+    retired_model = "te" + "rra"
+    require(retired_model not in skill_text.lower(), "orchestration skill must not retain retired routing")
+    for guidance in ("least costly model and effort", "outcome-first", "stop condition", "measured task evals", "verification as the boundary", "requested settings separately"):
+        require(guidance in skill_text, f"orchestration skill must retain efficiency guidance: {guidance}")
 
 readme_path = repo / "README.md"
 require(readme_path.is_file(), f"missing README: {readme_path}")
 if readme_path.is_file():
     readme = readme_path.read_text(encoding="utf-8")
     require("$astra-advisor:orchestration" in readme, "README must include the Astra Advisor invocation")
+    require("https://github.com/openai/codex/discussions/46658" in readme, "README must cite the adaptive-allocation Codex discussion")
     links = markdown_links(readme)
     require("https://attentionheads.substack.com/" in links, "README must link to Attention Heads")
     subscribe_links = [urlsplit(link) for link in links if urlsplit(link).path == "/subscribe"]

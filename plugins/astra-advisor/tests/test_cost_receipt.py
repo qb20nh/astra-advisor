@@ -12,7 +12,8 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parents[1]
 SCRIPT = PLUGIN / "scripts" / "cost_receipt.py"
-PRICING = PLUGIN / "pricing" / "2026-09-04.json"
+PRICING = PLUGIN / "pricing" / "2026-09-25.json"
+HISTORICAL_PRICING = PLUGIN / "pricing" / "2026-09-04.json"
 EXAMPLE = PLUGIN / "examples" / "illustrative-usage.json"
 SPEC = importlib.util.spec_from_file_location("cost_receipt", SCRIPT)
 assert SPEC and SPEC.loader
@@ -99,6 +100,54 @@ class CostReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(cost_receipt.ReceiptError, text):
             self.calculate(payload)
 
+    def test_pricing_snapshot_contains_current_and_forward_models(self) -> None:
+        snapshot = json.loads(PRICING.read_text(encoding="utf-8"))
+        self.assertEqual(
+            set(snapshot["models"]),
+            {
+                "gpt-6-astra",
+                "gpt-5.6-sol",
+                "gpt-5.6-luna",
+                "gpt-6-sol",
+                "gpt-6-luna",
+            },
+        )
+
+    def test_historical_snapshot_still_prices_previous_release_receipts(self) -> None:
+        snapshot = json.loads(HISTORICAL_PRICING.read_text(encoding="utf-8"))
+        self.assertEqual(
+            set(snapshot["models"]),
+            {"gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"},
+        )
+        result = cost_receipt.calculate_receipt(whole_task(), HISTORICAL_PRICING)
+        self.assertEqual(result["status"], "observed_tokens_api_estimate")
+        self.assertEqual(result["pricing"]["snapshot_date"], "2026-09-04")
+
+    def test_gpt6_standard_rates_are_verified_and_not_promotional(self) -> None:
+        snapshot = json.loads(PRICING.read_text(encoding="utf-8"))
+        self.assertEqual(
+            snapshot["models"]["gpt-6-sol"],
+            {
+                "input": "2",
+                "cached_input": "0.2",
+                "output": "10",
+                "promotional": False,
+                "verified_on": "2026-09-25",
+                "source_url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            },
+        )
+        self.assertEqual(
+            snapshot["models"]["gpt-6-luna"],
+            {
+                "input": "0.1",
+                "cached_input": "0.01",
+                "output": "0.5",
+                "promotional": False,
+                "verified_on": "2026-09-25",
+                "source_url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            },
+        )
+
     def test_exact_decimal_accounting_and_same_token_comparison(self) -> None:
         result = self.calculate(whole_task())
 
@@ -110,6 +159,7 @@ class CostReceiptTests(unittest.TestCase):
         self.assertEqual(comparison["api_price_difference_usd"], "0.03883")
         self.assertIn("not a measured", comparison["label"])
         self.assertTrue(result["calls"][2]["promotional_rate"])
+        self.assertEqual(result["calls"][2]["rate_verified_on"], "2026-09-04")
         self.assertIsNone(result["calls"][2]["reasoning_tokens_included_in_output"])
 
     def test_cached_and_reasoning_subsets_are_not_double_counted(self) -> None:
@@ -277,7 +327,7 @@ class CostReceiptTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         result = json.loads(completed.stdout)
         self.assertTrue(result["illustrative"])
-        self.assertEqual(result["pricing"]["snapshot_date"], "2026-09-04")
+        self.assertEqual(result["pricing"]["snapshot_date"], "2026-09-25")
 
     def test_cli_rejects_nonfinite_json_tokens(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
