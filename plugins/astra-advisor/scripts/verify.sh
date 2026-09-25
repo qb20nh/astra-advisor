@@ -13,7 +13,7 @@ import re
 import sys
 import subprocess
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import urlsplit
 
 
 repo = Path(sys.argv[1]).resolve()
@@ -79,8 +79,8 @@ manifest = require_mapping(load_json(manifest_path, "plugin manifest"), "plugin 
 require_string(manifest, "name", "plugin manifest", "astra-advisor")
 require_string(manifest, "version", "plugin manifest", "0.3.0")
 require_string(manifest, "description", "plugin manifest")
-require_string(manifest, "homepage", "plugin manifest", "https://github.com/DannyMac180/astra-advisor#readme")
-require_string(manifest, "repository", "plugin manifest", "https://github.com/DannyMac180/astra-advisor")
+require_string(manifest, "homepage", "plugin manifest", "https://github.com/qb20nh/astra-advisor#readme")
+require_string(manifest, "repository", "plugin manifest", "https://github.com/qb20nh/astra-advisor")
 require_string(manifest, "license", "plugin manifest", "MIT")
 require(manifest.get("skills") == "./skills/", "plugin manifest.skills must be ./skills/")
 keywords = manifest.get("keywords")
@@ -105,7 +105,7 @@ capabilities = interface.get("capabilities")
 require_list_of_strings(capabilities, "plugin manifest.interface.capabilities")
 if isinstance(capabilities, list):
     require({"Interactive", "Write"}.issubset(capabilities), "plugin manifest.interface.capabilities must include Interactive and Write")
-require_string(interface, "websiteURL", "plugin manifest.interface", "https://github.com/DannyMac180/astra-advisor")
+require_string(interface, "websiteURL", "plugin manifest.interface", "https://github.com/qb20nh/astra-advisor")
 default_prompt = interface.get("defaultPrompt")
 require_list_of_strings(default_prompt, "plugin manifest.interface.defaultPrompt")
 if isinstance(default_prompt, list):
@@ -155,17 +155,6 @@ if readme_path.is_file():
     require("$astra-advisor:orchestration" in readme, "README must include the Astra Advisor invocation")
     require("https://github.com/openai/codex/discussions/46658" in readme, "README must cite the adaptive-allocation Codex discussion")
     links = markdown_links(readme)
-    require("https://attentionheads.substack.com/" in links, "README must link to Attention Heads")
-    subscribe_links = [urlsplit(link) for link in links if urlsplit(link).path == "/subscribe"]
-    require(bool(subscribe_links), "README must link to the Attention Heads subscribe page")
-    require(
-        any(
-            parsed.netloc == "attentionheads.substack.com"
-            and parse_qs(parsed.query).get("utm_campaign") == ["astra-advisor"]
-            for parsed in subscribe_links
-        ),
-        "README subscribe link must track astra-advisor",
-    )
     for target in links:
         check_relative_link(target, repo, "README link")
 

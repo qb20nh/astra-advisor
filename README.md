@@ -15,13 +15,6 @@ ChatGPT Work cloud `create_thread` must omit `model` and
 does not dispatch a model-pinned request there by default. Native Codex subagents are usable
 where the current tool schema exposes the needed controls.
 
-## Go deeper
-
-I write [Attention Heads](https://attentionheads.substack.com/) — deep,
-evidence-backed writing on AI, cognition, and agentic engineering. The **Agentic
-Engineering Field Notes** series covers the craft of using AI. [Subscribe](https://attentionheads.substack.com/subscribe?utm_source=github&utm_medium=readme&utm_campaign=astra-advisor)
-to get new posts in your inbox.
-
 ## Quick start
 
 Install the plugin in a current Codex CLI or ChatGPT desktop app with plugins
@@ -29,7 +22,7 @@ enabled. Start a fresh task after installation and select GPT-6 Astra at any eff
 supported by the current Codex host:
 
 ~~~sh
-codex plugin marketplace add DannyMac180/astra-advisor --ref main
+codex plugin marketplace add qb20nh/astra-advisor --ref main
 codex plugin add astra-advisor@astra-advisor
 ~~~
 
@@ -38,6 +31,19 @@ Start a task with:
 ~~~text
 Use $astra-advisor:orchestration to plan, build, verify, and review this work.
 ~~~
+
+## What's new in 0.3.0
+
+- The primary advisor is now **GPT-6 Astra**, with delegated work routed between
+  `gpt-6-sol` and `gpt-6-luna` when those models and the requested effort are
+  available in live tool metadata.
+- Routing now starts from the least costly model and effort likely to meet the
+  acceptance criteria, then reassesses from verified task evidence instead of
+  escalating automatically.
+- Cost receipts use a new versioned September 25 pricing snapshot with GPT-6 rates,
+  without changing the historical snapshot used by 0.2.0 receipts.
+- Pricing validation now preserves per-model verification dates and rejects usage
+  outside the calculator's supported context, service-tier, and cache-write cases.
 
 ## How routing works
 
@@ -48,17 +54,11 @@ delegation begins. The skill never changes the parent session.
 
 When delegation helps, Astra uses the exposed generic `collaboration.spawn_agent`
 tool with an explicit `model`, `reasoning_effort`, and `fork_turns: none`. It chooses
-between `gpt-5.6-sol` and `gpt-5.6-luna` based on the task's risk,
+between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
 context, and independent work. There are no predefined role TOMLs, companion
 installer, role-to-model mapping, or fixed subagent count cap. Astra gives each
 subagent a concrete bounded deliverable and continues useful parent work while it
 runs.
-
-These identifiers intentionally follow the models currently exposed by the native
-subagent catalog. Astra must not request `gpt-6-sol` or `gpt-6-luna` until live tool
-metadata exposes them; when it does, the same selection policy can adopt them without
-silently substituting an unavailable model. GPT-6 pricing is recorded separately so
-future receipts can use verified rates without rewriting historical snapshots.
 
 Routing is outcome-first and cost-aware. Astra delegates only when parallelism,
 specialist attention, or fresh-context review is likely to repay coordination cost.
@@ -86,8 +86,8 @@ Live tool metadata is authoritative. The current documented effort snapshot is:
 
 | Model | Known efforts |
 | --- | --- |
-| `gpt-5.6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
 
 If a selected model, effort, control, or tool is unavailable, conflicting, or
 unobservable, Astra fails that delegation closed and reports the limitation. It does
@@ -101,7 +101,7 @@ effort. Astra accepts the work only after the reviewer returns `ship`; `fix-firs
 requires a new parent verification and fresh review, while `rethink` requires a
 revised plan.
 
-## Live visibility and cost receipts (0.2.0)
+## Live visibility and cost receipts
 
 Every delegation announces its name, bounded task, selected model and reasoning
 effort, and selection reason. Its result reports actual status and runtime-observed
@@ -122,12 +122,12 @@ delegation savings. Reasoning effort does not multiply the token price.
 Plugin 0.3.0 uses the current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json),
 which records official source URLs and standard short-context USD rates per million
 tokens. Each current entry records its own verification date; GPT-6 Sol and Luna were
-verified September 25, while the carried-forward GPT-5.6 rates retain their September
-4 verification date. The snapshot-level `verified_on` is therefore conservatively
-the oldest included verification date. The immutable
+verified September 25, while carried-forward legacy rates retain their original
+verification date. The snapshot-level `verified_on` is therefore conservatively the
+oldest included verification date. The immutable
 [September 4 snapshot](plugins/astra-advisor/pricing/2026-09-04.json) remains available
-for receipts produced by plugin 0.2.0. These are historical estimates; GPT-5.6 Sol
-pricing is promotional and may change. The calculator rejects unsupported
+for receipts produced by plugin 0.2.0. These are historical estimates, and
+promotional pricing may change. The calculator rejects unsupported
 long-context, service-tier, and cache-write cases instead of assuming standard rates.
 It conservatively supports at most 128,000 input tokens per call; this is an
 implementation support boundary, not a claimed official pricing threshold.

@@ -6,8 +6,8 @@
     "name": "Daniel McAteer",
     "url": "https://github.com/DannyMac180"
   },
-  "homepage": "https://github.com/DannyMac180/astra-advisor#readme",
-  "repository": "https://github.com/DannyMac180/astra-advisor",
+  "homepage": "https://github.com/qb20nh/astra-advisor#readme",
+  "repository": "https://github.com/qb20nh/astra-advisor",
   "license": "MIT",
   "keywords": ["codex", "orchestration", "multi-agent", "gpt-6-astra"],
   "skills": "./skills/",
@@ -18,7 +18,7 @@
     "developerName": "Daniel McAteer",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
-    "websiteURL": "https://github.com/DannyMac180/astra-advisor",
+    "websiteURL": "https://github.com/qb20nh/astra-advisor",
     "defaultPrompt": [
       "Use $astra-advisor:orchestration to plan, build, verify, and review this work.",
       "Choose dynamic subagents only when bounded independent work improves delivery."
