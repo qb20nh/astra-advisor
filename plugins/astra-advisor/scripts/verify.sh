@@ -13,7 +13,7 @@ import re
 import sys
 import subprocess
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import urlsplit
 
 
 repo = Path(sys.argv[1]).resolve()
@@ -79,8 +79,8 @@ manifest = require_mapping(load_json(manifest_path, "plugin manifest"), "plugin 
 require_string(manifest, "name", "plugin manifest", "astra-advisor")
 require_string(manifest, "version", "plugin manifest", "0.3.0")
 require_string(manifest, "description", "plugin manifest")
-require_string(manifest, "homepage", "plugin manifest", "https://github.com/DannyMac180/astra-advisor#readme")
-require_string(manifest, "repository", "plugin manifest", "https://github.com/DannyMac180/astra-advisor")
+require_string(manifest, "homepage", "plugin manifest", "https://github.com/qb20nh/astra-advisor#readme")
+require_string(manifest, "repository", "plugin manifest", "https://github.com/qb20nh/astra-advisor")
 require_string(manifest, "license", "plugin manifest", "MIT")
 require(manifest.get("skills") == "./skills/", "plugin manifest.skills must be ./skills/")
 keywords = manifest.get("keywords")
@@ -101,11 +101,15 @@ for key, expected in (
     require_string(interface, key, "plugin manifest.interface", expected)
 for key in ("shortDescription", "longDescription"):
     require_string(interface, key, "plugin manifest.interface")
+long_description = interface.get("longDescription")
+if isinstance(long_description, str):
+    require("gpt-6-sol" in long_description and "gpt-6-luna" in long_description, "plugin manifest must advertise both GPT-6 subagent models")
+    require(("gpt-" + "5") not in long_description.lower(), "plugin manifest must use only GPT-6 models")
 capabilities = interface.get("capabilities")
 require_list_of_strings(capabilities, "plugin manifest.interface.capabilities")
 if isinstance(capabilities, list):
     require({"Interactive", "Write"}.issubset(capabilities), "plugin manifest.interface.capabilities must include Interactive and Write")
-require_string(interface, "websiteURL", "plugin manifest.interface", "https://github.com/DannyMac180/astra-advisor")
+require_string(interface, "websiteURL", "plugin manifest.interface", "https://github.com/qb20nh/astra-advisor")
 default_prompt = interface.get("defaultPrompt")
 require_list_of_strings(default_prompt, "plugin manifest.interface.defaultPrompt")
 if isinstance(default_prompt, list):
@@ -119,12 +123,14 @@ require(skill_path.is_file(), f"missing orchestration skill: {skill_path}")
 require(operations_path.is_file(), f"missing operations reference: {operations_path}")
 require(ui_path.is_file(), f"missing orchestration UI metadata: {ui_path}")
 if operations_path.is_file():
-    for target in markdown_links(operations_path.read_text(encoding="utf-8")):
+    operations_text = operations_path.read_text(encoding="utf-8")
+    for target in markdown_links(operations_text):
         check_relative_link(target, operations_path.parent, "operations reference link")
+    require("gpt-6-sol" in operations_text and "gpt-6-luna" in operations_text, "operations reference must include both GPT-6 subagent models")
+    require(("gpt-" + "5") not in operations_text.lower(), "operations reference must use only GPT-6 models")
 require((plugin / "scripts" / "cost_receipt.py").is_file(), "missing cost receipt calculator")
 require((plugin / "tests" / "test_cost_receipt.py").is_file(), "missing cost receipt tests")
 require((plugin / "pricing" / "2026-09-25.json").is_file(), "missing pricing snapshot")
-require((plugin / "pricing" / "2026-09-04.json").is_file(), "missing historical pricing snapshot")
 
 if skill_path.is_file():
     skill_text = skill_path.read_text(encoding="utf-8")
@@ -142,7 +148,9 @@ if skill_path.is_file():
         require(bool(frontmatter_lines.get("description")), "orchestration skill frontmatter.description must be non-empty")
     for target in markdown_links(skill_text):
         check_relative_link(target, skill_root, "orchestration skill link")
-    require("gpt-5.6-sol" in skill_text and "gpt-5.6-luna" in skill_text, "orchestration skill must include both catalog-supported subagent models")
+    require("gpt-6-sol" in skill_text and "gpt-6-luna" in skill_text, "orchestration skill must include both GPT-6 subagent models")
+    retired_family = "gpt-" + "5"
+    require(retired_family not in skill_text.lower(), "orchestration skill must use only GPT-6 models")
     retired_model = "te" + "rra"
     require(retired_model not in skill_text.lower(), "orchestration skill must not retain retired routing")
     for guidance in ("least costly model and effort", "outcome-first", "stop condition", "measured task evals", "verification as the boundary", "requested settings separately"):
@@ -154,18 +162,8 @@ if readme_path.is_file():
     readme = readme_path.read_text(encoding="utf-8")
     require("$astra-advisor:orchestration" in readme, "README must include the Astra Advisor invocation")
     require("https://github.com/openai/codex/discussions/46658" in readme, "README must cite the adaptive-allocation Codex discussion")
+    require(("gpt-" + "5") not in readme.lower(), "README must use only GPT-6 models")
     links = markdown_links(readme)
-    require("https://attentionheads.substack.com/" in links, "README must link to Attention Heads")
-    subscribe_links = [urlsplit(link) for link in links if urlsplit(link).path == "/subscribe"]
-    require(bool(subscribe_links), "README must link to the Attention Heads subscribe page")
-    require(
-        any(
-            parsed.netloc == "attentionheads.substack.com"
-            and parse_qs(parsed.query).get("utm_campaign") == ["astra-advisor"]
-            for parsed in subscribe_links
-        ),
-        "README subscribe link must track astra-advisor",
-    )
     for target in links:
         check_relative_link(target, repo, "README link")
 

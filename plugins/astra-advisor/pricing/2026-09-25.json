@@ -15,23 +15,6 @@
       "verified_on": "2026-09-04",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra"
     },
-    "gpt-5.6-sol": {
-      "input": "4",
-      "cached_input": "0.4",
-      "output": "20",
-      "promotional": true,
-      "verified_on": "2026-09-04",
-      "freshness_disclosure": "Promotional pricing verified on 2026-09-04; re-verify before later use.",
-      "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
-    },
-    "gpt-5.6-luna": {
-      "input": "0.2",
-      "cached_input": "0.02",
-      "output": "1.2",
-      "promotional": false,
-      "verified_on": "2026-09-04",
-      "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
-    },
     "gpt-6-sol": {
       "input": "2",
       "cached_input": "0.2",
