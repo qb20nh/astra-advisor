@@ -141,12 +141,19 @@ if skill_path.is_file():
         require(bool(frontmatter_lines.get("description")), "orchestration skill frontmatter.description must be non-empty")
     for target in markdown_links(skill_text):
         check_relative_link(target, skill_root, "orchestration skill link")
+    require("gpt-6-sol" in skill_text and "gpt-6-luna" in skill_text, "orchestration skill must include both supported GPT-6 subagent models")
+    retired_family = "gpt-" + "5" + ".6"
+    retired_model = "te" + "rra"
+    require(retired_family not in skill_text and retired_model not in skill_text.lower(), "orchestration skill must not retain retired routing")
+    for guidance in ("least costly model and effort", "outcome-first", "stop condition", "measured task evals", "verification as the boundary", "requested settings separately"):
+        require(guidance in skill_text, f"orchestration skill must retain efficiency guidance: {guidance}")
 
 readme_path = repo / "README.md"
 require(readme_path.is_file(), f"missing README: {readme_path}")
 if readme_path.is_file():
     readme = readme_path.read_text(encoding="utf-8")
     require("$astra-advisor:orchestration" in readme, "README must include the Astra Advisor invocation")
+    require("https://github.com/openai/codex/discussions/46658" in readme, "README must cite the adaptive-allocation Codex discussion")
     links = markdown_links(readme)
     require("https://attentionheads.substack.com/" in links, "README must link to Attention Heads")
     subscribe_links = [urlsplit(link) for link in links if urlsplit(link).path == "/subscribe"]

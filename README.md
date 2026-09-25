@@ -48,19 +48,40 @@ delegation begins. The skill never changes the parent session.
 
 When delegation helps, Astra uses the exposed generic `collaboration.spawn_agent`
 tool with an explicit `model`, `reasoning_effort`, and `fork_turns: none`. It chooses
-among `gpt-5.6-sol`, `gpt-5.6-terra`, and `gpt-5.6-luna` from the task's risk,
+between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
 context, and independent work. There are no predefined role TOMLs, companion
 installer, role-to-model mapping, or fixed subagent count cap. Astra gives each
 subagent a concrete bounded deliverable and continues useful parent work while it
 runs.
 
+Routing is outcome-first and cost-aware. Astra delegates only when parallelism,
+specialist attention, or fresh-context review is likely to repay coordination cost.
+It starts with the least costly model and effort that can reliably meet the bounded
+acceptance criteria, uses Luna for clear low-risk execution and Sol when consequence,
+ambiguity, or reasoning depth warrants it, and escalates only from task evidence or
+measured evals. Live metadata and current official model guidance override this
+heuristic.
+
+Capability and safety decisions should be checked against the current official GPT-6
+system card and model pages; delegation behavior should be checked against current
+official Codex subagent and prompting documentation. The checked-in effort table and
+routing heuristic are fallbacks, never stronger evidence than current official docs,
+live tool schemas, or workload-specific evals.
+
+The adaptive loop also incorporates the experimental framing proposed in the Codex
+community discussion [“Beyond Auto mode: learning to allocate models, tools, and
+subagents”](https://github.com/openai/codex/discussions/46658): keep requested and
+observed allocation separate, reassess from independently verified task-state
+changes, diagnose the failure location before escalating, and count routing,
+handoffs, retries, and verification when evaluating efficiency. This discussion is a
+design input, not official product documentation or proof that adaptive routing wins.
+
 Live tool metadata is authoritative. The current documented effort snapshot is:
 
 | Model | Known efforts |
 | --- | --- |
-| `gpt-5.6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-5.6-terra` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
 
 If a selected model, effort, control, or tool is unavailable, conflicting, or
 unobservable, Astra fails that delegation closed and reports the limitation. It does
@@ -69,7 +90,7 @@ runtime-confirmed values are reported separately.
 
 For substantial implementation, Astra inspects the complete diff and reruns the
 requested checks, then sends the accumulated change set to a fresh read-only
-reviewer. The reviewer can be any of the three supported models at a live-supported
+reviewer. The reviewer can be either supported model at a live-supported
 effort. Astra accepts the work only after the reviewer returns `ship`; `fix-first`
 requires a new parent verification and fresh review, while `rethink` requires a
 revised plan.

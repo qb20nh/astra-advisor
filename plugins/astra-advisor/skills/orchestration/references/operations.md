@@ -29,6 +29,33 @@ lanes. Update it only when new evidence changes the plan, and explain that evide
 
 ## Dynamic native delegation
 
+### Delegation gate
+
+Delegate only when the expected benefit exceeds coordination cost. A useful task is
+independent, has a crisp ownership boundary and acceptance test, and can run while
+the parent makes progress. Keep work in the parent when it is small, sequential,
+context-heavy, or likely to create merge conflicts. Batch closely related questions
+for one agent rather than fragmenting them, and do not spawn speculative agents with
+overlapping scopes.
+
+Use this selection order:
+
+1. Identify the smallest independently verifiable deliverable.
+2. Decide whether parallelism, specialist attention, or fresh-context review is
+   likely to improve quality or latency enough to repay handoff and integration.
+3. Choose the least costly model and effort supported by live metadata that is
+   plausibly sufficient. Use `gpt-6-luna` for clear, low-risk execution and
+   `gpt-6-sol` for bounded work whose consequence, ambiguity, or reasoning depth
+   warrants it.
+4. Escalate model or effort only from task evidence, a failed attempt, or measured
+   evals. Do not use price, naming, or a generic role label as proof of capability.
+5. Stop delegating when the remaining work is coupled, no longer parallel, or the
+   acceptance evidence is already sufficient.
+
+This is a default heuristic. Current official model guidance, the system card, live
+host metadata, and workload-specific evals take precedence. Preserve the user's
+selected parent effort; do not raise subagent effort without a concrete need.
+
 Use the generic `collaboration.spawn_agent` only if the current environment exposes
 that tool and its schema. Select a model and effort for each concrete, bounded,
 independent deliverable from the task's risk, context, and available work. Pass the
@@ -48,8 +75,8 @@ must be selected afresh for the actual task:
 {
   "task_name": "inspect_auth_boundary",
   "message": "Inspect the auth boundary in the owned files. Return findings, exact file references, and the checks you ran; do not edit outside that boundary.",
-  "model": "gpt-5.6-luna",
-  "reasoning_effort": "max",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "medium",
   "fork_turns": "none"
 }
 ~~~
@@ -65,14 +92,49 @@ parent session while independent subagents run. Avoid assigning the same change 
 check to both parent and subagent. Preserve concurrent edits and return each
 subagent's actual result and evidence to the parent.
 
+### Outcome-first subagent prompt
+
+Keep the handoff short and self-contained. More context is not automatically better;
+include only information that changes the delegate's work. Use this shape:
+
+~~~text
+Outcome: <one bounded deliverable>
+Ownership: <files, component, or question; state whether edits are allowed>
+Context: <minimum relevant facts and dependencies>
+Success: <observable acceptance criteria>
+Constraints: <safety, compatibility, scope, and side-effect limits>
+Validate: <specific checks or evidence to return>
+Return: <concise artifact, findings, changed files, and residual risks>
+Stop: <condition for completion, escalation, or reporting a blocker>
+~~~
+
+Do not ask for chain-of-thought or a verbose account of internal reasoning. Do ask
+for decisions, supporting evidence, commands run, and unresolved risks. If required
+input is missing, the delegate should report the smallest missing item instead of
+expanding scope. Retry only when new evidence makes success likely; otherwise
+escalate or return the work to the parent.
+
 The following is the known capability snapshot for routing. It is guidance for a
 selection, not a contract that overrides live tool metadata:
 
 | Model | Efforts known in the current snapshot |
 | --- | --- |
-| `gpt-5.6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-5.6-terra` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+
+For capability and safety claims, consult the current OpenAI GPT-6 system card and
+the official model pages referenced by the pricing snapshot. For orchestration
+behavior, consult the current official Codex subagent and prompting documentation.
+Treat those sources and live schemas as authoritative; this repository's snapshot
+and heuristics are fallback operational guidance, not substitutes for them.
+
+The adaptive-allocation experiment in [Codex discussion
+#46658](https://github.com/openai/codex/discussions/46658) is a non-authoritative
+design input. Its useful controls are adopted here: separate selection from observed
+rerouting, snapshot effective configuration, make verification a reassessment
+boundary, diagnose where failure occurred, and charge coordination overhead to the
+route. Do not present the discussion as official documentation or as evidence that
+adaptive allocation improves performance.
 
 Inspect the current tool metadata when selecting and invoking a subagent. A changed
 live capability list wins over this snapshot. If the selected model, effort, explicit
@@ -86,9 +148,56 @@ The public spawn and thread metadata are authoritative for model and effort. Use
 runtime introspection only to resolve a field that public metadata omitted, and report
 the source of each value. Chosen values are not the same as runtime-confirmed values.
 
+### Evidence-driven reassessment
+
+Use this control loop at meaningful decision boundaries, not after every tool call:
+
+~~~text
+task state -> allocation -> action -> evidence -> verification -> updated task state
+                                      |                         |
+                                      +---- reassess if needed -+
+~~~
+
+Before changing a route, record:
+
+- the unresolved task state before and after the action;
+- the requested model, effort, tool, permissions, and context;
+- the effective or observed configuration at dispatch, including inheritance or
+  defaults when exposed, without reconstructing it later from the parent;
+- the verifier result and the evidence that triggered reassessment;
+- the likely failure location: resource selection, resource execution, missing or
+  wrong context, tool/environment, handoff/integration, verification, or task
+  definition; and
+- observed tokens, elapsed time, and tool calls when exposed, with their coverage
+  boundaries.
+
+Then choose `keep`, `change`, or `stop`. Do not equate failure with insufficient
+reasoning effort: changing context, decomposition, tooling, validation, or the task
+boundary may be the appropriate intervention. Do not equate more activity or model
+self-confidence with progress. An independent check must establish a useful state
+change. User-pinned settings, permissions, and budget limits remain hard constraints
+through every reassessment.
+
+When a route changes, emit:
+
+~~~text
+ASTRA REASSESS
+trigger: <independently checked evidence>
+state: <unresolved before> -> <unresolved after>
+diagnosis: <selection | execution | context | tool/environment |
+            handoff/integration | verification | task definition>
+decision: <keep | change | stop, with requested model/effort/tool if changed>
+observed cost: <tokens, elapsed time, and tool calls with scope, or unobservable>
+reason: <why expected benefit exceeds added coordination cost>
+~~~
+
+Do not expose chain-of-thought. The trace contains operational decisions and evidence
+only. A runtime reroute is an observation, not proof that Astra requested or caused
+it; record the requested allocation and observed reroute separately.
+
 For substantial implementation, the parent first inspects the complete accumulated
 diff and reruns the requested checks. It then starts a fresh read-only reviewer in a
-new context. The reviewer can be `gpt-5.6-sol`, `gpt-5.6-terra`, or `gpt-5.6-luna`,
+new context. The reviewer can be `gpt-6-sol` or `gpt-6-luna`,
 with an effort supported by live metadata, and must receive the exact change set,
 interfaces, constraints, and verification evidence. Ask it to return:
 
