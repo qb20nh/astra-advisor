@@ -14,7 +14,7 @@
   "interface": {
     "displayName": "Astra Advisor",
     "shortDescription": "Use GPT-6 Astra to plan, route, verify, and review work dynamically.",
-    "longDescription": "Astra Advisor keeps GPT-6 Astra in the primary session at the effort selected by the user. Astra can combine useful parent work with bounded native Codex subagents, choosing gpt-5.6-sol or gpt-5.6-luna and a supported effort from live tool metadata. ChatGPT Work cloud tasks remain bounded by the create_thread schema and do not promise arbitrary model or effort pinning.",
+    "longDescription": "Astra Advisor keeps GPT-6 Astra in the primary session at the effort selected by the user. Astra can combine useful parent work with bounded native Codex subagents, choosing gpt-6-sol or gpt-6-luna and a supported effort from live tool metadata. ChatGPT Work cloud tasks remain bounded by the create_thread schema and do not promise arbitrary model or effort pinning.",
     "developerName": "Daniel McAteer",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],

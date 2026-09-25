@@ -37,22 +37,17 @@ say that it is unobservable; never claim a runtime pin that was not confirmed. R
 Use the generic `collaboration.spawn_agent` tool only when it is exposed by the
 current tool schema. Each selected subagent must receive an explicit `model`, an
 explicit supported `reasoning_effort`, and `fork_turns: none`. Choose dynamically
-between `gpt-5.6-sol` and `gpt-5.6-luna` based on the task's risk,
+between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
 context, and independent work available; do not encode a role-to-model mapping or a
 fixed number of subagents. Give every subagent a concrete, bounded, independent
 deliverable while Astra continues useful parent work. Do not duplicate the parent's
 implementation or verification in a subagent.
 
-These are the current catalog-exposed identifiers. Do not request `gpt-6-sol` or
-`gpt-6-luna` until the live spawn schema or catalog exposes them. If availability
-changes, prefer the live-supported replacement and report that evidence; never turn
-a planned model migration into an unavailable request.
-
 Start with the least costly model and effort that evidence indicates can reliably
 satisfy the deliverable. Escalate only for a task-specific reason such as high
 consequence, architectural ambiguity, difficult debugging, broad synthesis, or a
-failed lower-cost attempt. Prefer `gpt-5.6-luna` for well-specified, low-risk work and
-`gpt-5.6-sol` when the bounded task needs stronger reasoning or review. This is a
+failed lower-cost attempt. Prefer `gpt-6-luna` for well-specified, low-risk work and
+`gpt-6-sol` when the bounded task needs stronger reasoning or review. This is a
 routing heuristic, not a capability guarantee: live metadata, current official model
 guidance, and measured task evals override it. Never infer capability from a model
 name or price alone.

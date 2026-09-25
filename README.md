@@ -40,8 +40,8 @@ Use $astra-advisor:orchestration to plan, build, verify, and review this work.
 - Routing now starts from the least costly model and effort likely to meet the
   acceptance criteria, then reassesses from verified task evidence instead of
   escalating automatically.
-- Cost receipts use a new versioned September 25 pricing snapshot with GPT-6 rates,
-  without changing the historical snapshot used by 0.2.0 receipts.
+- Cost receipts use a versioned September 25 pricing snapshot containing only GPT-6
+  family rates.
 - Pricing validation now preserves per-model verification dates and rejects usage
   outside the calculator's supported context, service-tier, and cache-write cases.
 
@@ -121,13 +121,8 @@ delegation savings. Reasoning effort does not multiply the token price.
 
 Plugin 0.3.0 uses the current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json),
 which records official source URLs and standard short-context USD rates per million
-tokens. Each current entry records its own verification date; GPT-6 Sol and Luna were
-verified September 25, while carried-forward legacy rates retain their original
-verification date. The snapshot-level `verified_on` is therefore conservatively the
-oldest included verification date. The immutable
-[September 4 snapshot](plugins/astra-advisor/pricing/2026-09-04.json) remains available
-for receipts produced by plugin 0.2.0. These are historical estimates, and
-promotional pricing may change. The calculator rejects unsupported
+tokens. Each current entry records its own verification date. These are historical
+estimates, and pricing may change. The calculator rejects unsupported
 long-context, service-tier, and cache-write cases instead of assuming standard rates.
 It conservatively supports at most 128,000 input tokens per call; this is an
 implementation support boundary, not a claimed official pricing threshold.
