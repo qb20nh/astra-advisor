@@ -48,11 +48,17 @@ delegation begins. The skill never changes the parent session.
 
 When delegation helps, Astra uses the exposed generic `collaboration.spawn_agent`
 tool with an explicit `model`, `reasoning_effort`, and `fork_turns: none`. It chooses
-between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
+between `gpt-5.6-sol` and `gpt-5.6-luna` based on the task's risk,
 context, and independent work. There are no predefined role TOMLs, companion
 installer, role-to-model mapping, or fixed subagent count cap. Astra gives each
 subagent a concrete bounded deliverable and continues useful parent work while it
 runs.
+
+These identifiers intentionally follow the models currently exposed by the native
+subagent catalog. Astra must not request `gpt-6-sol` or `gpt-6-luna` until live tool
+metadata exposes them; when it does, the same selection policy can adopt them without
+silently substituting an unavailable model. GPT-6 pricing is recorded separately so
+future receipts can use verified rates without rewriting historical snapshots.
 
 Routing is outcome-first and cost-aware. Astra delegates only when parallelism,
 specialist attention, or fresh-context review is likely to repay coordination cost.
@@ -80,8 +86,8 @@ Live tool metadata is authoritative. The current documented effort snapshot is:
 
 | Model | Known efforts |
 | --- | --- |
-| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-5.6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
 
 If a selected model, effort, control, or tool is unavailable, conflicting, or
 unobservable, Astra fails that delegation closed and reports the limitation. It does
@@ -113,10 +119,12 @@ all-Astra run would actually consume, actual net task savings, quality, speed, o
 change to ChatGPT subscription charges or usage credits. No subagents means no
 delegation savings. Reasoning effort does not multiply the token price.
 
-The [pricing snapshot](plugins/astra-advisor/pricing/2026-09-04.json) records official
-source URLs and standard short-context USD rates per million tokens, verified by
-the recording coordinator on September 4, 2026. These are historical estimates;
-Sol pricing is promotional and may change. The calculator rejects unsupported
+The current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json) records
+official source URLs and standard short-context USD rates per million tokens,
+verified by the recording coordinator on September 25, 2026. The immutable
+[September 4 snapshot](plugins/astra-advisor/pricing/2026-09-04.json) remains available
+for receipts produced by plugin 0.2.0. These are historical estimates; GPT-5.6 Sol
+pricing is promotional and may change. The calculator rejects unsupported
 long-context, service-tier, and cache-write cases instead of assuming standard rates.
 It conservatively supports at most 128,000 input tokens per call; this is an
 implementation support boundary, not a claimed official pricing threshold.

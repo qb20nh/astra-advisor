@@ -123,7 +123,8 @@ if operations_path.is_file():
         check_relative_link(target, operations_path.parent, "operations reference link")
 require((plugin / "scripts" / "cost_receipt.py").is_file(), "missing cost receipt calculator")
 require((plugin / "tests" / "test_cost_receipt.py").is_file(), "missing cost receipt tests")
-require((plugin / "pricing" / "2026-09-04.json").is_file(), "missing pricing snapshot")
+require((plugin / "pricing" / "2026-09-25.json").is_file(), "missing pricing snapshot")
+require((plugin / "pricing" / "2026-09-04.json").is_file(), "missing historical pricing snapshot")
 
 if skill_path.is_file():
     skill_text = skill_path.read_text(encoding="utf-8")
@@ -141,10 +142,9 @@ if skill_path.is_file():
         require(bool(frontmatter_lines.get("description")), "orchestration skill frontmatter.description must be non-empty")
     for target in markdown_links(skill_text):
         check_relative_link(target, skill_root, "orchestration skill link")
-    require("gpt-6-sol" in skill_text and "gpt-6-luna" in skill_text, "orchestration skill must include both supported GPT-6 subagent models")
-    retired_family = "gpt-" + "5" + ".6"
+    require("gpt-5.6-sol" in skill_text and "gpt-5.6-luna" in skill_text, "orchestration skill must include both catalog-supported subagent models")
     retired_model = "te" + "rra"
-    require(retired_family not in skill_text and retired_model not in skill_text.lower(), "orchestration skill must not retain retired routing")
+    require(retired_model not in skill_text.lower(), "orchestration skill must not retain retired routing")
     for guidance in ("least costly model and effort", "outcome-first", "stop condition", "measured task evals", "verification as the boundary", "requested settings separately"):
         require(guidance in skill_text, f"orchestration skill must retain efficiency guidance: {guidance}")
 

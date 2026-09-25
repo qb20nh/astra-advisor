@@ -44,8 +44,8 @@ Use this selection order:
 2. Decide whether parallelism, specialist attention, or fresh-context review is
    likely to improve quality or latency enough to repay handoff and integration.
 3. Choose the least costly model and effort supported by live metadata that is
-   plausibly sufficient. Use `gpt-6-luna` for clear, low-risk execution and
-   `gpt-6-sol` for bounded work whose consequence, ambiguity, or reasoning depth
+   plausibly sufficient. Use `gpt-5.6-luna` for clear, low-risk execution and
+   `gpt-5.6-sol` for bounded work whose consequence, ambiguity, or reasoning depth
    warrants it.
 4. Escalate model or effort only from task evidence, a failed attempt, or measured
    evals. Do not use price, naming, or a generic role label as proof of capability.
@@ -75,7 +75,7 @@ must be selected afresh for the actual task:
 {
   "task_name": "inspect_auth_boundary",
   "message": "Inspect the auth boundary in the owned files. Return findings, exact file references, and the checks you ran; do not edit outside that boundary.",
-  "model": "gpt-6-luna",
+  "model": "gpt-5.6-luna",
   "reasoning_effort": "medium",
   "fork_turns": "none"
 }
@@ -119,8 +119,13 @@ selection, not a contract that overrides live tool metadata:
 
 | Model | Efforts known in the current snapshot |
 | --- | --- |
-| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
-| `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+| `gpt-5.6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-5.6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
+
+Do not request `gpt-6-sol` or `gpt-6-luna` merely because the pricing snapshot can
+price them. Pricing support and native routing availability are separate. Adopt a
+replacement identifier only after the live catalog exposes it, and record the
+catalog or schema as the selection evidence.
 
 For capability and safety claims, consult the current OpenAI GPT-6 system card and
 the official model pages referenced by the pricing snapshot. For orchestration
@@ -197,7 +202,7 @@ it; record the requested allocation and observed reroute separately.
 
 For substantial implementation, the parent first inspects the complete accumulated
 diff and reruns the requested checks. It then starts a fresh read-only reviewer in a
-new context. The reviewer can be `gpt-6-sol` or `gpt-6-luna`,
+new context. The reviewer can be `gpt-5.6-sol` or `gpt-5.6-luna`,
 with an effort supported by live metadata, and must receive the exact change set,
 interfaces, constraints, and verification evidence. Ask it to return:
 
@@ -266,7 +271,7 @@ No API keys, external inference CLIs, billing-account queries, or dashboard are 
 Every task completion requires a visible receipt, including a task with no delegation
 or no accessible token telemetry. The calculator is Python standard library only:
 [calculator](../../../scripts/cost_receipt.py),
-[pricing snapshot](../../../pricing/2026-09-04.json).
+[pricing snapshot](../../../pricing/2026-09-25.json).
 Resolve these paths relative to this installed reference, not a guessed cache version.
 
 Use only non-overlapping observed usage with an explicit source. Cumulative telemetry
@@ -282,11 +287,13 @@ never add them a second time. Explicit per-call standard short-context eligibili
 is required; unknown or unsupported long-context, service-tier, or cache-write pricing
 must not silently inherit standard rates. Effort is recorded without a rate multiplier.
 
-The snapshot records USD per million tokens and official source URLs, with a
-2026-09-04 verification date supplied by the recording coordinator. It is a historical
-snapshot, not a live-price guarantee; Sol rates are promotional. Disclose the snapshot
-date and freshness when showing an estimate. Use a newly verified versioned snapshot
-if current prices are required. Do not silently change historical receipts.
+The current snapshot records USD per million tokens and official source URLs, with a
+2026-09-25 verification date supplied by the recording coordinator. It is a historical
+snapshot, not a live-price guarantee; GPT-5.6 Sol rates are promotional. Disclose the
+snapshot date and freshness when showing an estimate. The immutable 2026-09-04
+snapshot remains available for receipts from plugin 0.2.0. Use a newly verified
+versioned snapshot if current prices are required. Do not silently change historical
+receipts.
 
 ~~~text
 API-EQUIVALENT COST RECEIPT
