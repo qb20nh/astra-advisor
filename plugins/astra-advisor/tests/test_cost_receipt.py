@@ -228,11 +228,13 @@ class CostReceiptTests(unittest.TestCase):
         self.assertEqual(first["missing_token_fields"], ["input_tokens", "cached_input_tokens"])
 
     def test_missing_rate_is_unavailable(self) -> None:
-        payload = whole_task()
-        payload["calls"][1]["model"] = "gpt-unknown"
-        result = self.calculate(payload)
-        self.assertEqual(result["calls"][1]["status"], "unavailable")
-        self.assertEqual(result["status"], "partial")
+        for model in ("gpt-unknown", "gpt-6.1-sol"):
+            with self.subTest(model=model):
+                payload = whole_task()
+                payload["calls"][1]["model"] = model
+                result = self.calculate(payload)
+                self.assertEqual(result["calls"][1]["status"], "unavailable")
+                self.assertEqual(result["status"], "partial")
 
     def test_missing_individual_rate_is_unavailable_but_invalid_rate_is_rejected(self) -> None:
         snapshot = json.loads(PRICING.read_text(encoding="utf-8"))

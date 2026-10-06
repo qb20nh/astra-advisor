@@ -32,6 +32,13 @@ Start a task with:
 Use $astra-advisor:orchestration to plan, build, verify, and review this work.
 ~~~
 
+## Current routing
+
+Sol delegation and review now use `gpt-6.1-sol`; Astra and Luna are unchanged.
+The September 25 pricing snapshot and illustrative fixture retain historical
+`gpt-6-sol` rates. For `gpt-6.1-sol` receipts, supply a verified snapshot with
+`--pricing PATH`; otherwise report pricing as unavailable. Do not reuse 6.0 rates.
+
 ## What's new in 0.3.0
 
 - The primary advisor is now **GPT-6 Astra**, with delegated work routed between
@@ -54,7 +61,7 @@ delegation begins. The skill never changes the parent session.
 
 When delegation helps, Astra uses the exposed generic `collaboration.spawn_agent`
 tool with an explicit `model`, `reasoning_effort`, and `fork_turns: none`. It chooses
-between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
+between `gpt-6.1-sol` and `gpt-6-luna` based on the task's risk,
 context, and independent work. There are no predefined role TOMLs, companion
 installer, role-to-model mapping, or fixed subagent count cap. Astra gives each
 subagent a concrete bounded deliverable and continues useful parent work while it
@@ -86,7 +93,7 @@ Live tool metadata is authoritative. The current documented effort snapshot is:
 
 | Model | Known efforts |
 | --- | --- |
-| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6.1-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
 | `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
 
 If a selected model, effort, control, or tool is unavailable, conflicting, or

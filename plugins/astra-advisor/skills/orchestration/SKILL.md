@@ -37,7 +37,7 @@ say that it is unobservable; never claim a runtime pin that was not confirmed. R
 Use the generic `collaboration.spawn_agent` tool only when it is exposed by the
 current tool schema. Each selected subagent must receive an explicit `model`, an
 explicit supported `reasoning_effort`, and `fork_turns: none`. Choose dynamically
-between `gpt-6-sol` and `gpt-6-luna` based on the task's risk,
+between `gpt-6.1-sol` and `gpt-6-luna` based on the task's risk,
 context, and independent work available; do not encode a role-to-model mapping or a
 fixed number of subagents. Give every subagent a concrete, bounded, independent
 deliverable while Astra continues useful parent work. Do not duplicate the parent's
@@ -47,7 +47,7 @@ Start with the least costly model and effort that evidence indicates can reliabl
 satisfy the deliverable. Escalate only for a task-specific reason such as high
 consequence, architectural ambiguity, difficult debugging, broad synthesis, or a
 failed lower-cost attempt. Prefer `gpt-6-luna` for well-specified, low-risk work and
-`gpt-6-sol` when the bounded task needs stronger reasoning or review. This is a
+`gpt-6.1-sol` when the bounded task needs stronger reasoning or review. This is a
 routing heuristic, not a capability guarantee: live metadata, current official model
 guidance, and measured task evals override it. Never infer capability from a model
 name or price alone.
@@ -126,3 +126,8 @@ subagents there are no delegation savings. Effort is metadata, not a price multi
 Use the versioned snapshot and disclose its date and promotional Sol pricing. Reject
 unsupported pricing regimes rather than silently using standard rates. An illustrative
 fixture is optional and must remain separate from this task's receipt.
+
+The bundled September 25 pricing snapshot covers historical `gpt-6-sol`, not
+`gpt-6.1-sol`. For 6.1 receipts, use `--pricing PATH` with a verified snapshot
+containing that exact model, or report pricing unavailable. Never apply 6.0 rates
+to 6.1 usage. The bundled illustrative fixture remains historical.

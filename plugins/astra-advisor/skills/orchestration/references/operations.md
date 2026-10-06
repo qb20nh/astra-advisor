@@ -45,7 +45,7 @@ Use this selection order:
    likely to improve quality or latency enough to repay handoff and integration.
 3. Choose the least costly model and effort supported by live metadata that is
    plausibly sufficient. Use `gpt-6-luna` for clear, low-risk execution and
-   `gpt-6-sol` for bounded work whose consequence, ambiguity, or reasoning depth
+   `gpt-6.1-sol` for bounded work whose consequence, ambiguity, or reasoning depth
    warrants it.
 4. Escalate model or effort only from task evidence, a failed attempt, or measured
    evals. Do not use price, naming, or a generic role label as proof of capability.
@@ -119,7 +119,7 @@ selection, not a contract that overrides live tool metadata:
 
 | Model | Efforts known in the current snapshot |
 | --- | --- |
-| `gpt-6-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
+| `gpt-6.1-sol` | `low`, `medium`, `high`, `xhigh`, `max`, `ultra` |
 | `gpt-6-luna` | `low`, `medium`, `high`, `xhigh`, `max` |
 
 For capability and safety claims, consult the current OpenAI GPT-6 system card and
@@ -197,7 +197,7 @@ it; record the requested allocation and observed reroute separately.
 
 For substantial implementation, the parent first inspects the complete accumulated
 diff and reruns the requested checks. It then starts a fresh read-only reviewer in a
-new context. The reviewer can be `gpt-6-sol` or `gpt-6-luna`,
+new context. The reviewer can be `gpt-6.1-sol` or `gpt-6-luna`,
 with an effort supported by live metadata, and must receive the exact change set,
 interfaces, constraints, and verification evidence. Ask it to return:
 
@@ -347,3 +347,8 @@ The bundled calculator conservatively caps each call at 128,000 input tokens. Th
 is an implementation support boundary, not an official model pricing threshold.
 Missing cache counts remain unknown; provide an explicit zero only when supported
 by the usage source. Unknown usage fields are rejected to avoid ignoring cache writes.
+
+The bundled September 25 pricing snapshot covers historical `gpt-6-sol`, not
+`gpt-6.1-sol`. For 6.1 receipts, use `--pricing PATH` with a verified snapshot
+containing that exact model, or report pricing unavailable. Never apply 6.0 rates
+to 6.1 usage. The bundled illustrative fixture remains historical.
