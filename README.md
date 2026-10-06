@@ -32,7 +32,7 @@ Start a task with:
 Use $astra-advisor:orchestration to plan, build, verify, and review this work.
 ~~~
 
-## Current routing
+## What's new in 0.3.1
 
 Sol delegation and review now use `gpt-6.1-sol`; Astra and Luna are unchanged.
 The September 25 pricing snapshot and illustrative fixture retain historical
@@ -126,7 +126,7 @@ all-Astra run would actually consume, actual net task savings, quality, speed, o
 change to ChatGPT subscription charges or usage credits. No subagents means no
 delegation savings. Reasoning effort does not multiply the token price.
 
-Plugin 0.3.0 uses the current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json),
+Plugin 0.3.1 uses the current [pricing snapshot](plugins/astra-advisor/pricing/2026-09-25.json),
 which records official source URLs and standard short-context USD rates per million
 tokens. Each current entry records its own verification date. These are historical
 estimates, and pricing may change. The calculator rejects unsupported
