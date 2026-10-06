@@ -103,7 +103,7 @@ for key in ("shortDescription", "longDescription"):
     require_string(interface, key, "plugin manifest.interface")
 long_description = interface.get("longDescription")
 if isinstance(long_description, str):
-    require("gpt-6-sol" in long_description and "gpt-6-luna" in long_description, "plugin manifest must advertise both GPT-6 subagent models")
+    require("gpt-6.1-sol" in long_description and "gpt-6-luna" in long_description, "plugin manifest must advertise both GPT-6 subagent models")
     require(("gpt-" + "5") not in long_description.lower(), "plugin manifest must use only GPT-6 models")
 capabilities = interface.get("capabilities")
 require_list_of_strings(capabilities, "plugin manifest.interface.capabilities")
@@ -126,7 +126,7 @@ if operations_path.is_file():
     operations_text = operations_path.read_text(encoding="utf-8")
     for target in markdown_links(operations_text):
         check_relative_link(target, operations_path.parent, "operations reference link")
-    require("gpt-6-sol" in operations_text and "gpt-6-luna" in operations_text, "operations reference must include both GPT-6 subagent models")
+    require("gpt-6.1-sol" in operations_text and "gpt-6-luna" in operations_text, "operations reference must include both GPT-6 subagent models")
     require(("gpt-" + "5") not in operations_text.lower(), "operations reference must use only GPT-6 models")
 require((plugin / "scripts" / "cost_receipt.py").is_file(), "missing cost receipt calculator")
 require((plugin / "tests" / "test_cost_receipt.py").is_file(), "missing cost receipt tests")
@@ -148,7 +148,7 @@ if skill_path.is_file():
         require(bool(frontmatter_lines.get("description")), "orchestration skill frontmatter.description must be non-empty")
     for target in markdown_links(skill_text):
         check_relative_link(target, skill_root, "orchestration skill link")
-    require("gpt-6-sol" in skill_text and "gpt-6-luna" in skill_text, "orchestration skill must include both GPT-6 subagent models")
+    require("gpt-6.1-sol" in skill_text and "gpt-6-luna" in skill_text, "orchestration skill must include both GPT-6 subagent models")
     retired_family = "gpt-" + "5"
     require(retired_family not in skill_text.lower(), "orchestration skill must use only GPT-6 models")
     retired_model = "te" + "rra"
